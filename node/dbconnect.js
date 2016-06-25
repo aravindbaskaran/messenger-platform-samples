@@ -60,7 +60,8 @@ var url = 'mongodb://localhost:27017/productdb';
 				var baseSubClause = {};
 				baseSubClause["$"+condition] = baseClause;
 				opts["$and"]=[{"price": priceClause}, baseSubClause];
-				sort = { price: 1 };
+				console.log("priceClause", priceClause);
+				sort = { price: 0 };
 			}else{
 				opts["$"+condition] = baseClause;
 			}

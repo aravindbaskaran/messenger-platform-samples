@@ -88,7 +88,7 @@ const actions = {
   more_search(sender, response){
     var opts = {
       category: response.result.parameters.category,
-      name: response.result.parameters.color,
+      name: response.result.parameters.category,
       userID: sender,
       condition: "or",
       iteration: "skip"
@@ -114,14 +114,14 @@ const actions = {
 
   },
   lower_price(sender, response){
-    var r = response.result.contexts[0].parameters
+    var r = response.result.contexts[0].parameters;
     if(!r){
       sendFBMessage(sender, {text: "Sorry, this is embarrassing. I forgot what you were talking about. Can you repeat what you said earlier?"});
       return;
     }
     var opts = {
       category: r.category,
-      name: r.color,
+      name: r.category,
       userID: sender,
       condition: "or",
       iteration: "limit"
@@ -129,10 +129,10 @@ const actions = {
     var startRange = response.result.parameters.startPrice;
     var endRange = response.result.parameters.endPrice;
     if(startRange){
-      opts[startRange] = startRange.amount;
+      opts["startRange"] = startRange.amount;
     }
     if(endRange){
-      opts[endRange] = endRange.amount;
+      opts["endRange"] = endRange.amount;
     }
     dbconnect.getProducts(opts, function(products){
       if(products.length == 0){
@@ -149,7 +149,7 @@ const actions = {
   show_sale(sender, response){
     dbconnect.getProducts({
       category: response.result.parameters.category,
-      name: response.result.parameters.color,
+      name: response.result.parameters.category,
       userID: sender,
       condition: "or",
       iteration: "limit"
