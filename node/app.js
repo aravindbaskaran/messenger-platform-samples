@@ -255,14 +255,14 @@ function processEvent(event) {
                     });
                 }
                 if(!actions[response.result.action]){
-                  sendFBMessage(sender, {text: "I totally didn't get you, can you ask me something else?"});
+                  sendFBMessage(sender, {text: "You know what, this is embarrassing. My teachers are not too bright, can you ask me something else?"});
                 }else if(!response.result.actionIncomplete){
                   console.log(response.result.parameters);
                   actions[response.result.action](sender, response);
                 }
 
             }else{
-              sendFBMessage(sender, {text: "I totally didn't get you, can you ask me something else?"});
+              sendFBMessage(sender, {text: "You know what, this is embarrassing. My teachers are not too bright, can you ask me something else?"});
             }
         });
 
