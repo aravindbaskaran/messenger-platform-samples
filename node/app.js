@@ -71,13 +71,27 @@ const createProductPayload = (product, query) =>{
 };
 const actions = {
   start_search(sender, response){
-    dbconnect.getProducts({
+    var opts = {
       category: response.result.parameters.category,
       name: response.result.parameters.category,
       userID: sender,
       condition: "or",
       iteration: "limit"
-    }, function(products){
+    };
+    var startRange = response.result.parameters.startPrice;
+    var endRange = response.result.parameters.endPrice;
+    var r = response.result.contexts[0];
+    if(r){
+      startRange = r.parameters.startPrice;
+      endRange = r.parameters.endPrice;
+    }
+    if(startRange){
+      opts[startRange] = startRange;
+    }
+    if(endRange){
+      opts[endRange] = endRange;
+    }
+    dbconnect.getProducts(opts, function(products){
       if(products.length == 0){
         sendFBMessage(sender, {text: "I couldn't find anything like that, please try again :("});
       }else{
@@ -95,6 +109,11 @@ const actions = {
     };
     var startRange = response.result.parameters.startPrice;
     var endRange = response.result.parameters.endPrice;
+    var r = response.result.contexts[0];
+    if(r){
+      startRange = r.parameters.startPrice;
+      endRange = r.parameters.endPrice;
+    }
     if(startRange){
       opts[startRange] = startRange;
     }
@@ -114,14 +133,14 @@ const actions = {
 
   },
   lower_price(sender, response){
-    var r = response.result.contexts[0].parameters;
+    var r = response.result.contexts[0];
     if(!r){
       sendFBMessage(sender, {text: "Sorry, this is embarrassing. I forgot what you were talking about. Can you repeat what you said earlier?"});
       return;
     }
     var opts = {
-      category: r.category,
-      name: r.category,
+      category: r.parameters.category,
+      name: r.parameters.category,
       userID: sender,
       condition: "or",
       iteration: "limit"
