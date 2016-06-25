@@ -1,26 +1,26 @@
 {
-  "name": "messenger-get-started",
+  "name": "api-ai-facebook",
   "version": "1.0.0",
-  "description": "Get started example for Messenger Platform",
+  "description": "API.AI Facebook Bot",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "lint": "jshint --exclude node_modules .",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Danil Skachkov <danil.skachkov@speaktoit.com> (https://api.ai)",
+  "license": "ISC",
+  "dependencies": {
+    "apiai": "2.0.5",
+    "async": "^2.0.0-rc.5",
+    "body-parser": "^1.15.0",
+    "express": "4.13.3",
+    "html-entities": "^1.2.0",
+    "json-bigint": "^0.2.0",
+    "node-uuid": "^1.4.7",
+    "request": "^2.71.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://source.developers.google.com/p/messenger-get-started/r/default"
-  },
-  "author": "Facebook",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.15.0",
-    "config": "^1.20.4",
-    "express": "^4.13.4",
-    "request": "^2.72.0"
-  },
-  "engines": {
-    "node": "~4.1.2"
+    "url": "https://github.com/api-ai/api-ai-facebook"
   }
 }
