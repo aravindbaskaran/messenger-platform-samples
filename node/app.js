@@ -180,6 +180,9 @@ const actions = {
         fbSendDataMessage(sender, products);
       }
     });
+  },
+  say_welcome(sender, response){
+    
   }
 };
 
