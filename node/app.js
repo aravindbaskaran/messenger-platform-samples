@@ -79,7 +79,7 @@ const actions = {
       iteration: "limit"
     }, function(products){
       if(products.length == 0){
-        sendFBMessage(sender, {text: "We couldn't find anything like that, please try again :("});
+        sendFBMessage(sender, {text: "I couldn't find anything like that, please try again :("});
       }else{
         fbSendDataMessage(sender, products);
       }
@@ -114,9 +114,14 @@ const actions = {
 
   },
   lower_price(sender, response){
+    var r = response.result.contexts[0].parameters
+    if(!r){
+      sendFBMessage(sender, {text: "Sorry, this is embarrassing. I forgot what you were talking about. Can you repeat what you said earlier?"});
+      return;
+    }
     var opts = {
-      category: response.result.parameters.category,
-      name: response.result.parameters.color,
+      category: r.category,
+      name: r.color,
       userID: sender,
       condition: "or",
       iteration: "limit"
@@ -124,15 +129,15 @@ const actions = {
     var startRange = response.result.parameters.startPrice;
     var endRange = response.result.parameters.endPrice;
     if(startRange){
-      opts[startRange] = startRange;
+      opts[startRange] = startRange.amount;
     }
     if(endRange){
-      opts[endRange] = endRange;
+      opts[endRange] = endRange.amount;
     }
     dbconnect.getProducts(opts, function(products){
       if(products.length == 0){
         // TODO Send action message
-        sendFBMessage(sender, {text: "We couldn't find anything on sale, maybe try pants?"});
+        sendFBMessage(sender, {text: "I couldn't find anything lower on price, sorry :("});
       }else{
         fbSendDataMessage(sender, products);
       }
@@ -151,7 +156,7 @@ const actions = {
     }, function(products){
       if(products.length == 0){
         // TODO Send action message
-        sendFBMessage(sender, {text: "We couldn't find anything on sale, maybe try pants?"});
+        sendFBMessage(sender, {text: "I couldn't find anything on sale, maybe try pants?"});
       }else{
         fbSendDataMessage(sender, products);
       }
@@ -372,11 +377,11 @@ const receivedPostback = (event) => {
   if(payloadObj.action == "buy"){
     // Actual buy
     // Add score to result for product, query, senderID
-    message = "Thank you for buying! We will take you to the store to checkout";
+    message = "Thank you for buying! I will take you to the store to checkout";
   }else if(payloadObj.action == "later"){
     // Actual watchlist
     // Add score to result for product, query, senderID
-    message = "OK, we will let you know when the price changes";
+    message = "OK, I will let you know when the price changes";
   }else if(payloadObj.action == "wishlist"){
     // Actual wishlist
     // Add score to result for product, query, senderID
