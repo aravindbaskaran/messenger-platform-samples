@@ -110,8 +110,8 @@ var url = 'mongodb://localhost:27017/productdb';
 		});
 	}
 
-	var data = {category:"CLOTHING", name:"Blue", userID:"Aravind", condition:"or", iteration:"limit", startRange:63, endRange:70};
-	getProducts(data);
+	//var data = {category:"CLOTHING", name:"Blue", userID:"Aravind", condition:"or", iteration:"limit", startRange:63, endRange:70};
+	//getProducts(data);
 module.exports = {
 	getProducts: getProducts
 };
