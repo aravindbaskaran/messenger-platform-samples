@@ -74,7 +74,9 @@ const actions = {
     dbconnect.getProducts({
       category: response.result.parameters.category,
       name: response.result.parameters.category,
-      userID: sender
+      userID: sender,
+      condition: "or",
+      iteration: "limit"
     }, function(products){
       if(products.length == 0){
         sendFBMessage(sender, {text: "We couldn't find anything like that, please try again :("});
@@ -84,7 +86,20 @@ const actions = {
     });
   },
   more_search(sender, response){
-
+    dbconnect.getProducts({
+      category: response.result.parameters.category,
+      name: response.result.parameters.category,
+      userID: sender,
+      condition: "or",
+      iteration: "skip"
+    }, function(products){
+      if(products.length == 0){
+        // TODO Send action message
+        sendFBMessage(sender, {text: "That's all there is to it. Try asking me nicely? ;)"});
+      }else{
+        fbSendDataMessage(sender, products.splice(0,products.length > 10 ? 10 : products.length));
+      }
+    });
   },
   sub_search(sender, response){
 
@@ -96,7 +111,20 @@ const actions = {
 
   },
   show_sale(sender, response){
-
+    dbconnect.getProducts({
+      category: response.result.parameters.category,//"sale",
+      name: response.result.parameters.color,//"sale",
+      userID: sender,
+      condition: "or",
+      iteration: "limit"
+    }, function(products){
+      if(products.length == 0){
+        // TODO Send action message
+        sendFBMessage(sender, {text: "We couldn't find anything on sale, maybe try pants?"});
+      }else{
+        fbSendDataMessage(sender, products);
+      }
+    });
   }
 };
 
@@ -105,7 +133,7 @@ const fbSendDataMessage = (recipientId, products, cb) =>{
   products.forEach(function(p){
     elements.push(createProductPayload(p));
   });
-  console.log("In getProducts callback", elements);
+  console.log("In getProducts callback", products.length);
   const messageData = {
     form: {
       recipient: {

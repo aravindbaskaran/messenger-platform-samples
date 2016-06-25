@@ -25,7 +25,7 @@ resultSchema.pre('save', function(next){
 var url = 'mongodb://localhost:27017/productdb';
 
 	//find products matching the input query
-	var findProducts = function( category, name, userid, callback) {
+	var findProducts = function( category, name, userid, condition, iteration, startrange, endrange, callback) {
 
 		// Use connect method to connect to the Server
 		MongoClient.connect(url, function (err, db) {
@@ -45,12 +45,30 @@ var url = 'mongodb://localhost:27017/productdb';
 			// do some work here with the database.
 			var categoryR = new RegExp(".*"+category+".*", "i");
 			var pageTitleR = new RegExp(".*"+name+".*", "i");
-			var cursor = db.collection('products').find({
-				$or:[{"category": categoryR}, {"pagetitle": pageTitleR}]
-				}).limit(10).toArray(function(err, productArray){
+			var opts = {};
+			var sort = { lastUpdatedAt: 1 };
+			var priceClause = startrange || endrange ? {} : null;
+			var baseClause = [{"category": categoryR}, {"pagetitle": pageTitleR}];
+			if(startrange){
+				priceClause["$gte"] = startrange;
+			}
+			if (endrange){
+				priceClause["$lte"] = endrange;
+			}
+			console.log("baseClause", baseClause);
+			if(priceClause){
+				var baseSubClause = {};
+				baseSubClause["$"+condition] = baseClause;
+				opts["$and"]=[{"price": priceClause}, baseSubClause];
+				sort = { price: 1 };
+			}else{
+				opts["$"+condition] = baseClause;
+			}
+			
+			var cursor = db.collection('products').find(opts)[iteration](10).sort(sort).toArray(function(err, productArray){
 			  
 			  for(var i=0; i < productArray.length; i++){
-			  	console.log("productid", productArray[i].productid);
+			  	console.log("productid", productArray[i].productid, productArray[i].price);
 			  	var j = new Results({
 			  		query:{category:category, pageTitle:name},
 			  		productID:productArray[i].productid,
@@ -60,20 +78,18 @@ var url = 'mongodb://localhost:27017/productdb';
 				};
 				callback(productArray);
 				db.close();
+			
 			});
-			}
-		});
-	};
+		}
+	});
+}
+
 	function createResultIfNotExists(j){
 		Results.findOne(j).exec(function(err, r){
-  		//console.log( 'printing r', r);
   		if(r==null){
-  			//console.log("creating j", j);
 				j.score = 0;
 				j.save(function(err, x) {
-					 //if (err) return console.error(err);
-					 //console.log("Created J", x);
-					//console.dir(j);
+					 if (err) return console.error(err);
 				});
   		}
   	});
@@ -84,14 +100,18 @@ var url = 'mongodb://localhost:27017/productdb';
 		var category = queryParams.category;
 		var name = queryParams.name;
 		var userID = queryParams.userID;
-		findProducts (category, name, userID, function(productArray){
+		var condition = queryParams.condition;
+		var iteration = queryParams.iteration;
+		var startRange = queryParams.startRange;
+		var endRange = queryParams.endRange;
+		findProducts (category, name, userID, condition, iteration, startRange, endRange, function(productArray){
 			console.log(productArray.length);
 			callback(productArray);
 		});
 	}
 
-	//var data = {category:"CLOTHING", name:"Blue", userID:"Aravind"};
-	//getProducts(data);
+	var data = {category:"CLOTHING", name:"Blue", userID:"Aravind", condition:"or", iteration:"limit", startRange:63, endRange:70};
+	getProducts(data);
 module.exports = {
 	getProducts: getProducts
 };
