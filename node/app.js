@@ -69,6 +69,37 @@ const createProductPayload = (product, query) =>{
     ]
   };
 };
+const actions = {
+  start_search(sender, response){
+    dbconnect.getProducts({
+      category: response.result.parameters.category,
+      name: response.result.parameters.category,
+      userID: sender
+    }, function(products){
+      if(products.length == 0){
+        sendFBMessage(sender, {text: "We couldn't find anything like that, please try again :("});
+      }else{
+        fbSendDataMessage(sender, products);
+      }
+    });
+  },
+  more_search(sender, response){
+
+  },
+  sub_search(sender, response){
+
+  },
+  lower_price(sender, response){
+    
+  },
+  end_search(sender, response){
+
+  },
+  show_sale(sender, response){
+
+  }
+};
+
 const fbSendDataMessage = (recipientId, products, cb) =>{
   const elements = [];
   products.forEach(function(p){
@@ -140,21 +171,11 @@ function processEvent(event) {
                         sendFBMessage(sender, {text: textPart}, callback);
                     });
                 }
-                if(response.result.action != "start_search"){
+                if(!actions[response.result.action]){
                   sendFBMessage(sender, {text: "I totally didn't get you, can you ask me something else?"});
                 }else if(!response.result.actionIncomplete){
                   console.log(response.result.parameters);
-                  dbconnect.getProducts({
-                    category: response.result.parameters.category,
-                    name: response.result.parameters.category,
-                    userID: sender
-                  }, function(products){
-                    if(products.length == 0){
-                      sendFBMessage(sender, {text: "We couldn't find anything like that, please try again :("});
-                    }else{
-                      fbSendDataMessage(sender, products);
-                    }
-                  });
+                  actions[response.result.action](sender, response);
                 }
 
             }else{
