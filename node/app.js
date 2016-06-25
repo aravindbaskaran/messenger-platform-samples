@@ -86,13 +86,22 @@ const actions = {
     });
   },
   more_search(sender, response){
-    dbconnect.getProducts({
+    var opts = {
       category: response.result.parameters.category,
-      name: response.result.parameters.category,
+      name: response.result.parameters.color,
       userID: sender,
       condition: "or",
       iteration: "skip"
-    }, function(products){
+    };
+    var startRange = response.result.parameters.startPrice;
+    var endRange = response.result.parameters.endPrice;
+    if(startRange){
+      opts[startRange] = startRange;
+    }
+    if(endRange){
+      opts[endRange] = endRange;
+    }
+    dbconnect.getProducts(opts, function(products){
       if(products.length == 0){
         // TODO Send action message
         sendFBMessage(sender, {text: "That's all there is to it. Try asking me nicely? ;)"});
@@ -105,15 +114,37 @@ const actions = {
 
   },
   lower_price(sender, response){
-    
+    var opts = {
+      category: response.result.parameters.category,
+      name: response.result.parameters.color,
+      userID: sender,
+      condition: "or",
+      iteration: "limit"
+    };
+    var startRange = response.result.parameters.startPrice;
+    var endRange = response.result.parameters.endPrice;
+    if(startRange){
+      opts[startRange] = startRange;
+    }
+    if(endRange){
+      opts[endRange] = endRange;
+    }
+    dbconnect.getProducts(opts, function(products){
+      if(products.length == 0){
+        // TODO Send action message
+        sendFBMessage(sender, {text: "We couldn't find anything on sale, maybe try pants?"});
+      }else{
+        fbSendDataMessage(sender, products);
+      }
+    });
   },
   end_search(sender, response){
 
   },
   show_sale(sender, response){
     dbconnect.getProducts({
-      category: response.result.parameters.category,//"sale",
-      name: response.result.parameters.color,//"sale",
+      category: response.result.parameters.category,
+      name: response.result.parameters.color,
       userID: sender,
       condition: "or",
       iteration: "limit"
