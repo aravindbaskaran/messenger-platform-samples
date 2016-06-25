@@ -48,18 +48,18 @@ const createProductPayload = (product, query) =>{
     subtitle: "$ " + product.price + product.category,
     item_url: product.fullurl,
     image_url: product.imageurl,
-    buttons: [/*{
+    buttons: [{
       type: "postback",
       title: "Buy",
-      payload: "buy"//JSON.stringify({product: product, action: "buy", query: query}),
+      payload: JSON.stringify({product: product, action: "buy", query: query})
     },{
       type: "postback",
-      title: "Buy Later",
-      payload: "later"//JSON.stringify({product: product, action: "later", query: query}),
-    },{
+      title: "Keep for later",
+      payload: JSON.stringify({product: product, action: "later", query: query})
+    },/*{
       type: "postback",
       title: "Add to Wishlist",
-      payload: "wishlist"//JSON.stringify({product: product, action: "wishlist", query: query}),
+      payload: "wishlist"//JSON.stringify({product: product, action: "wishlist", query: query})
     },*/{
       type: "web_url",
       url: product.fullurl,
